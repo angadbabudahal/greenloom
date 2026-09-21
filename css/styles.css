@@ -1534,11 +1534,12 @@ button {
 .footer-hq-col {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 10px;
-  text-align: center;
+  text-align: left;
   width: 100%;
+  max-width: 420px;
 }
 
 .footer-hq-col h4 {
@@ -1549,16 +1550,17 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 8px;
+  text-align: left;
 }
 
 .footer-hq-col .contact-row {
-  justify-content: center;
-  text-align: center;
+  justify-content: flex-start;
+  text-align: left;
 }
 
 .footer-admin-trigger-row {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   margin-top: 4px;
 }
 
@@ -1604,12 +1606,15 @@ button {
 
   .footer-hq-col {
     gap: 7px;
+    align-items: flex-start;
+    text-align: left;
   }
 
   .footer-hq-col h4 {
     font-size: 11px;
     letter-spacing: 0.06em;
     margin-bottom: 4px;
+    text-align: left;
   }
 
   .footer-hq-col .contact-row {
@@ -1618,10 +1623,16 @@ button {
     margin-bottom: 4px;
     line-height: 1.35;
     word-break: break-word;
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .footer-hq-col .contact-row .material-symbols-outlined {
     font-size: 14px;
+  }
+
+  .footer-admin-trigger-row {
+    justify-content: flex-start;
   }
 }
 

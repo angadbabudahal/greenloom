@@ -26,85 +26,9 @@ export function isLegacyProduct(p) {
   return false;
 }
 
-// --- High-Capacity Persistent Storage Engine (IndexedDB + LocalStorage Sync) ---
-class CatalogDB {
-  static open() {
-    return new Promise((resolve) => {
-      if (typeof window === 'undefined' || !window.indexedDB) {
-        resolve(null);
-        return;
-      }
-      try {
-        const req = indexedDB.open('GreenloomStoreDB', 1);
-        req.onupgradeneeded = (e) => {
-          const db = e.target.result;
-          if (!db.objectStoreNames.contains('catalog')) {
-            db.createObjectStore('catalog', { keyPath: 'id' });
-          }
-        };
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => resolve(null);
-      } catch (err) {
-        console.warn('Failed to open IndexedDB', err);
-        resolve(null);
-      }
-    });
-  }
-
-  static async saveAll(products) {
-    if (!products || !Array.isArray(products)) return false;
-    try {
-      const db = await this.open();
-      if (!db) return false;
-      return new Promise((resolve) => {
-        const tx = db.transaction('catalog', 'readwrite');
-        const store = tx.objectStore('catalog');
-        store.clear();
-        for (const p of products) {
-          store.put(p);
-        }
-        tx.oncomplete = () => resolve(true);
-        tx.onerror = () => resolve(false);
-      });
-    } catch (e) {
-      console.warn('IndexedDB saveAll error', e);
-      return false;
-    }
-  }
-
-  static async getAll() {
-    try {
-      const db = await this.open();
-      if (!db) return null;
-      return new Promise((resolve) => {
-        const tx = db.transaction('catalog', 'readonly');
-        const store = tx.objectStore('catalog');
-        const req = store.getAll();
-        req.onsuccess = () => {
-          const res = req.result;
-          resolve(Array.isArray(res) && res.length > 0 ? res : null);
-        };
-        req.onerror = () => resolve(null);
-      });
-    } catch (e) {
-      console.warn('IndexedDB getAll error', e);
-      return null;
-    }
-  }
-}
-
 class HempStoreApp {
   constructor() {
-    // Clear any previous cart / wishlist data from storage
-    try {
-      localStorage.removeItem('greenloom_cart');
-      localStorage.removeItem('greenloom_wishlist');
-    } catch (e) {
-      console.warn(e);
-    }
-
-    this.storageKey = 'greenloom_catalog_products';
-    this.products = this.loadProducts();
+    this.products = [...PRODUCTS];
     this.editingProductId = null;
     this.pendingDeleteProductId = null;
 
@@ -114,73 +38,13 @@ class HempStoreApp {
     this.discountPercent = 0;
   }
 
-  init() {
+  async init() {
     this.bindGlobalEvents();
     this.setupModals();
     this.setupAdminPortal();
 
-    // Cross-tab synchronization: keep all open tabs in sync when products are saved
-    window.addEventListener('storage', (e) => {
-      if (e.key === this.storageKey && e.newValue) {
-        try {
-          const synced = JSON.parse(e.newValue);
-          if (Array.isArray(synced)) {
-            this.products = synced.filter(p => !isLegacyProduct(p));
-            this.refreshCatalogViews();
-            const adminModal = document.getElementById('admin-product-modal');
-            if (adminModal && adminModal.classList.contains('open')) {
-              this.renderAdminInventory();
-            }
-          }
-        } catch (err) {
-          console.warn('Storage sync error', err);
-        }
-      }
-    });
-
-    // Check IndexedDB backup asynchronously and purge any legacy products
-    CatalogDB.getAll().then(dbProducts => {
-      if (dbProducts && Array.isArray(dbProducts) && dbProducts.length > 0) {
-        let modified = false;
-        const cleaned = dbProducts.filter(p => {
-          if (isLegacyProduct(p)) {
-            modified = true;
-            return false;
-          }
-          if (p.nutritionData) {
-            delete p.nutritionData;
-            modified = true;
-          }
-          return true;
-        });
-
-        // Ensure default authentic products exist
-        PRODUCTS.forEach(dp => {
-          if (!cleaned.some(p => p.id === dp.id)) {
-            cleaned.push(dp);
-            modified = true;
-          }
-        });
-
-        if (modified || cleaned.length !== dbProducts.length) {
-          CatalogDB.saveAll(cleaned);
-        }
-
-        this.products = cleaned;
-        try {
-          localStorage.setItem(this.storageKey, JSON.stringify(cleaned));
-        } catch (e) {
-          console.warn(e);
-        }
-        this.refreshCatalogViews();
-        const adminModal = document.getElementById('admin-product-modal');
-        if (adminModal && adminModal.classList.contains('open')) {
-          this.renderAdminInventory();
-        }
-      } else if (this.products && this.products.length > 0) {
-        CatalogDB.saveAll(this.products);
-      }
-    });
+    // Fetch live product catalog from centralized API
+    await this.syncCentralCatalog();
 
     const path = window.location.pathname;
     if (path.includes('product.html') || document.getElementById('product-detail-view')) {
@@ -189,6 +53,26 @@ class HempStoreApp {
       this.initShopPage();
     } else if (document.getElementById('home-view') || path === '/' || path.includes('index.html')) {
       this.initHomePage();
+    }
+  }
+
+  async syncCentralCatalog() {
+    try {
+      const res = await fetch('/api/products', { cache: 'no-cache' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          this.products = data;
+          this.activeProduct = this.products[0];
+          this.refreshCatalogViews();
+          const adminModal = document.getElementById('admin-product-modal');
+          if (adminModal && adminModal.classList.contains('open')) {
+            this.renderAdminInventory();
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('[GREENLOOM CMS] Operating with bundled catalog:', err.message);
     }
   }
 
@@ -257,80 +141,8 @@ class HempStoreApp {
     });
   }
 
-  // --- Product Catalog Persistence ---
-  loadProducts() {
-    try {
-      const stored = localStorage.getItem(this.storageKey);
-      if (stored !== null) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          let modified = false;
-          const cleaned = parsed.filter(p => {
-            if (isLegacyProduct(p)) {
-              modified = true;
-              return false;
-            }
-            if (p.nutritionData) {
-              delete p.nutritionData;
-              modified = true;
-            }
-            return true;
-          });
-
-          // Ensure default authentic products are present
-          PRODUCTS.forEach(dp => {
-            if (!cleaned.some(p => p.id === dp.id)) {
-              cleaned.push(dp);
-              modified = true;
-            }
-          });
-
-          if (modified || cleaned.length !== parsed.length) {
-            try {
-              localStorage.setItem(this.storageKey, JSON.stringify(cleaned));
-              CatalogDB.saveAll(cleaned);
-            } catch (e) {
-              console.warn(e);
-            }
-          }
-          return cleaned.length > 0 ? cleaned : [...PRODUCTS];
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to load custom products from storage', e);
-    }
-    // Fallback and initialize default catalog
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(PRODUCTS));
-      CatalogDB.saveAll(PRODUCTS);
-    } catch (e) {
-      console.warn(e);
-    }
-    return [...PRODUCTS];
-  }
-
   saveProducts(newProducts) {
     this.products = newProducts;
-
-    // 1. Always save to IndexedDB as high-capacity primary/backup store (no 5MB quota limit)
-    CatalogDB.saveAll(newProducts);
-
-    // 2. Save to localStorage with graceful fallback & automatic compression
-    try {
-      localStorage.setItem(this.storageKey, JSON.stringify(newProducts));
-    } catch (e) {
-      console.warn('LocalStorage quota exceeded or error, compressing storage...', e);
-      try {
-        const sanitized = newProducts.map(p => ({
-          ...p,
-          gallery: [p.image] // keep gallery lean to save space
-        }));
-        localStorage.setItem(this.storageKey, JSON.stringify(sanitized));
-      } catch (err2) {
-        console.error('Failed to save to localStorage even after compression', err2);
-      }
-    }
-
     this.refreshCatalogViews();
   }
 
@@ -1022,7 +834,7 @@ class HempStoreApp {
 
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
                 <span id="admin-product-count" style="font-size: 12px; color: var(--color-gold-light); font-weight: 600;">Loading catalog...</span>
-                <span style="font-size: 11px; color: rgba(250, 248, 244, 0.5);">Changes persist in store localStorage</span>
+                <span style="font-size: 11px; color: var(--color-gold-light); display: inline-flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 14px;">cloud_done</span> GitHub Repository Persistent CMS</span>
               </div>
 
               <div class="admin-products-grid" id="admin-inventory-list">
@@ -1356,8 +1168,8 @@ class HempStoreApp {
 
     // Preset buttons
     const presets = {
-      mask: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae",
-      coat: "https://images.unsplash.com/photo-1544441893-675973e31985",
+      mask: "https://images.unsplash.com/photo-1586942593568-29361efcd571",
+      coat: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3",
       cap: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b",
       emblem: "images/greenloom-emblem.png"
     };
@@ -1669,87 +1481,116 @@ class HempStoreApp {
       return;
     }
 
-    // Compress image if it is a large base64 data URL to keep catalog storage ultra-lean
-    if (image.startsWith('data:image') && image.length > 70000) {
-      image = await this.compressBase64Image(image, 800, 0.75);
+    const saveBtn = document.getElementById('admin-form-save-btn');
+    const originalSaveText = saveBtn ? saveBtn.innerHTML : '';
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = `<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span><span>Committing to GitHub...</span>`;
     }
 
-    const categoryLabels = {
-      nutrition: 'Superfood Nutrition',
-      'personal-care': 'Personal Care',
-      fashion: 'Sustainable Gear',
-      'pet-care': 'Pet Care',
-      edibles: 'Edibles & Treats'
-    };
+    try {
+      // If user uploaded a new local file (data:image URL), commit image to GitHub repository
+      if (image.startsWith('data:image')) {
+        this.showToast('Committing image to GitHub repository...');
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image,
+            filename: `${slug || 'product'}.jpg`
+          })
+        });
 
-    const badges = badgeText 
-      ? badgeText.split(',').map(b => b.trim()).filter(Boolean) 
-      : [];
+        if (!uploadRes.ok) {
+          const errData = await uploadRes.json().catch(() => ({}));
+          throw new Error(errData.error || `Image upload failed (${uploadRes.status})`);
+        }
 
-    const discountPercent = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
-
-    if (this.editingProductId) {
-      // Edit existing product
-      const idx = this.products.findIndex(p => p.id === this.editingProductId);
-      if (idx !== -1) {
-        this.products[idx] = {
-          ...this.products[idx],
-          name: title,
-          shortName: shortTitle,
-          category,
-          categoryLabel: categoryLabels[category] || 'Hemp Botanicals',
-          price,
-          mrp,
-          discountPercent,
-          badges,
-          image,
-          description,
-          isBestSeller,
-          isHotSelling
-        };
-        this.saveProducts(this.products);
-        this.showToast(`Updated "${shortTitle}"`);
+        const uploadData = await uploadRes.json();
+        if (uploadData.url) {
+          image = uploadData.url;
+          document.getElementById('admin-field-image').value = image;
+          this.showToast('Image committed to GitHub repository!');
+        }
       }
-    } else {
-      // Add new product
-      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-      const newId = `greenloom-${slug}-${Date.now().toString().slice(-4)}`;
 
-      const newProd = {
-        id: newId,
-        slug,
+      const categoryLabels = {
+        nutrition: 'Superfood Nutrition',
+        'personal-care': 'Personal Care',
+        fashion: 'Sustainable Gear',
+        'pet-care': 'Pet Care',
+        edibles: 'Edibles & Treats'
+      };
+
+      const badges = badgeText 
+        ? badgeText.split(',').map(b => b.trim()).filter(Boolean) 
+        : [];
+
+      const discountPercent = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
+
+      const productPayload = {
         name: title,
         shortName: shortTitle,
         category,
         categoryLabel: categoryLabels[category] || 'Hemp Botanicals',
-        brand: 'GREENLOOM',
-        brandLogo: 'images/greenloom-emblem.png',
         price,
         mrp,
         discountPercent,
-        rating: 4.9,
-        reviewCount: 1,
         badges,
         image,
         gallery: [image],
         description,
         isBestSeller,
-        isHotSelling,
-        sizeVariants: [
-          { volume: "Standard Pack", duration: "1 Unit", price, mrp }
-        ]
+        isHotSelling
       };
 
-      // Add to beginning of product array
-      this.products.unshift(newProd);
-      this.saveProducts(this.products);
-      this.showToast(`Added "${shortTitle}" to store!`);
-    }
+      const isEdit = Boolean(this.editingProductId);
+      const url = '/api/products';
+      const method = isEdit ? 'PUT' : 'POST';
+      const body = isEdit 
+        ? { product: { ...productPayload, id: this.editingProductId } }
+        : { product: productPayload };
 
-    // Switch back to list view
-    document.getElementById('admin-view-form').style.display = 'none';
-    document.getElementById('admin-view-list').style.display = 'block';
-    this.renderAdminInventory();
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server returned error status ${res.status}`);
+      }
+
+      const data = await res.json();
+      if (Array.isArray(data.products)) {
+        this.products = data.products;
+      } else if (data.product) {
+        if (isEdit) {
+          const idx = this.products.findIndex(p => p.id === this.editingProductId);
+          if (idx !== -1) this.products[idx] = data.product;
+        } else {
+          this.products.unshift(data.product);
+        }
+      }
+
+      this.saveProducts(this.products);
+      this.showToast(`Saved "${shortTitle}" & committed to GitHub!`);
+
+      // Switch back to inventory list view
+      document.getElementById('admin-view-form').style.display = 'none';
+      document.getElementById('admin-view-list').style.display = 'block';
+      this.renderAdminInventory();
+    } catch (err) {
+      console.error('[GREENLOOM CMS] Save product error:', err);
+      alert(`Could not save product: ${err.message}\n\nPlease verify Vercel GITHUB_TOKEN environment variables if deployed.`);
+    } finally {
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalSaveText;
+      }
+    }
   }
 
   deleteProduct(productId) {
@@ -1791,27 +1632,64 @@ class HempStoreApp {
     }
   }
 
-  executeDeleteProduct() {
+  async executeDeleteProduct() {
     if (!this.pendingDeleteProductId) return;
     const idToDelete = this.pendingDeleteProductId;
     const prod = this.products.find(p => p.id === idToDelete);
 
-    this.products = this.products.filter(p => p.id !== idToDelete);
-    this.saveProducts(this.products);
+    const confirmBtn = document.getElementById('admin-confirm-delete-btn');
+    const originalText = confirmBtn ? confirmBtn.innerHTML : '';
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = `<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span><span>Deleting from GitHub...</span>`;
+    }
 
-    const searchInput = document.getElementById('admin-search-input');
-    this.renderAdminInventory(searchInput ? searchInput.value : '');
+    try {
+      const res = await fetch(`/api/products?id=${encodeURIComponent(idToDelete)}`, {
+        method: 'DELETE'
+      });
 
-    this.closeDeleteConfirmModal();
-    this.showToast(`Deleted "${prod ? (prod.shortName || prod.name) : 'Product'}"`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Delete failed (${res.status})`);
+      }
+
+      const data = await res.json();
+      if (Array.isArray(data.products)) {
+        this.products = data.products;
+      } else {
+        this.products = this.products.filter(p => p.id !== idToDelete);
+      }
+
+      this.saveProducts(this.products);
+      this.closeDeleteConfirmModal();
+
+      const searchInput = document.getElementById('admin-search-input');
+      this.renderAdminInventory(searchInput ? searchInput.value : '');
+      this.showToast(`Deleted "${prod ? (prod.shortName || prod.name) : 'Product'}" & committed to GitHub!`);
+    } catch (err) {
+      console.error('[GREENLOOM CMS] Delete error:', err);
+      alert(`Could not delete product: ${err.message}`);
+    } finally {
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = originalText;
+      }
+    }
   }
 
-  resetCatalogDefaults() {
+  async resetCatalogDefaults() {
     const confirmed = confirm('Are you sure you want to reset the entire store catalog back to original default products? All custom additions and edits will be removed.');
-    if (confirmed) {
-      this.saveProducts([...PRODUCTS]);
+    if (!confirmed) return;
+
+    this.showToast('Resetting catalog...');
+    try {
+      this.products = [...PRODUCTS];
+      this.saveProducts(this.products);
       this.renderAdminInventory();
       this.showToast('Store catalog reset to default products.');
+    } catch (err) {
+      console.error(err);
     }
   }
 

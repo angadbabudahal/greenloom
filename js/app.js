@@ -56,9 +56,25 @@ class HempStoreApp {
     }
   }
 
+  async fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      return res;
+    } catch (err) {
+      clearTimeout(timer);
+      if (err.name === 'AbortError') {
+        throw new Error(`Request timed out after ${timeoutMs / 1000}s. The server or GitHub API took too long to respond.`);
+      }
+      throw err;
+    }
+  }
+
   async syncCentralCatalog() {
     try {
-      const res = await fetch('/api/products', { cache: 'no-cache' });
+      const res = await this.fetchWithTimeout('/api/products', { cache: 'no-cache' }, 8000);
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) {
@@ -1493,18 +1509,18 @@ class HempStoreApp {
       if (image.startsWith('data:image')) {
         this.showToast('Committing image to GitHub repository...');
         const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        const uploadRes = await fetch('/api/upload', {
+        const uploadRes = await this.fetchWithTimeout('/api/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             image,
             filename: `${slug || 'product'}.jpg`
           })
-        });
+        }, 15000);
 
         if (!uploadRes.ok) {
           const errData = await uploadRes.json().catch(() => ({}));
-          throw new Error(errData.error || `Image upload failed (${uploadRes.status})`);
+          throw new Error(errData.details || errData.error || `Image upload failed (${uploadRes.status})`);
         }
 
         const uploadData = await uploadRes.json();
@@ -1552,15 +1568,15 @@ class HempStoreApp {
         ? { product: { ...productPayload, id: this.editingProductId } }
         : { product: productPayload };
 
-      const res = await fetch(url, {
+      const res = await this.fetchWithTimeout(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
-      });
+      }, 15000);
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Server returned error status ${res.status}`);
+        throw new Error(errData.details || errData.error || `Server returned error status ${res.status}`);
       }
 
       const data = await res.json();
@@ -1584,7 +1600,7 @@ class HempStoreApp {
       this.renderAdminInventory();
     } catch (err) {
       console.error('[GREENLOOM CMS] Save product error:', err);
-      alert(`Could not save product: ${err.message}\n\nPlease verify Vercel GITHUB_TOKEN environment variables if deployed.`);
+      alert(`Could not save product: ${err.message}\n\nPlease check that GITHUB_TOKEN is configured in Vercel project environment variables.`);
     } finally {
       if (saveBtn) {
         saveBtn.disabled = false;
@@ -1645,13 +1661,13 @@ class HempStoreApp {
     }
 
     try {
-      const res = await fetch(`/api/products?id=${encodeURIComponent(idToDelete)}`, {
+      const res = await this.fetchWithTimeout(`/api/products?id=${encodeURIComponent(idToDelete)}`, {
         method: 'DELETE'
-      });
+      }, 15000);
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || `Delete failed (${res.status})`);
+        throw new Error(errData.details || errData.error || `Delete failed (${res.status})`);
       }
 
       const data = await res.json();

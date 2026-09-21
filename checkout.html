@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Direct WhatsApp Concierge | GREENLOOM</title>
+  <meta name="description" content="Order handcrafted Himalayan hemp clothing, sustainable gear, and lifestyle goods directly via WhatsApp concierge at GREENLOOM.">
+  <link rel="icon" type="image/png" href="images/greenloom-emblem.png">
+  <link rel="apple-touch-icon" href="images/greenloom-emblem.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .concierge-wrap {
+      max-width: 760px;
+      margin: 24px auto 48px;
+    }
+    .concierge-card {
+      background: var(--color-surface-card);
+      border-radius: var(--radius-xl);
+      padding: 36px 28px;
+      box-shadow: var(--shadow-level-2);
+      border: 1px solid var(--color-gold-border-subtle);
+      text-align: center;
+    }
+    .concierge-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 32px 0;
+      text-align: left;
+    }
+    .concierge-step-item {
+      background: var(--color-surface-container-low);
+      padding: 20px 16px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-surface-container);
+    }
+    .concierge-step-item .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-full);
+      background: var(--color-primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+    .concierge-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .concierge-trust-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid var(--color-surface-container);
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .concierge-steps {
+        grid-template-columns: 1fr;
+      }
+      .concierge-trust-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .concierge-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body id="checkout-view">
+
+  <!-- Sticky Main Header -->
+  <header class="site-header">
+    <div class="header-main">
+      <div class="header-left">
+        <a href="index.html" class="icon-btn" aria-label="Back to store">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+      </div>
+
+      <a href="index.html" class="brand-logo-wrap" aria-label="GREENLOOM Home">
+        <img src="images/greenloom-emblem.png" alt="GREENLOOM Leaf" class="brand-logo">
+        <span class="brand-wordmark-text">GREENLOOM</span>
+      </a>
+
+      <div class="header-actions">
+        <span class="pill-badge herbal" style="font-size: 11px;">100% Secure Chat</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-wrapper">
+    <div class="page-container">
+
+      <div class="concierge-wrap">
+        <div class="concierge-card">
+          <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: rgba(37, 211, 102, 0.12); color: #25d366; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+            <span class="material-symbols-outlined" style="font-size: 32px;">chat</span>
+          </div>
+
+          <h1 class="font-headline-lg" style="color: var(--color-primary); margin-bottom: 8px;">Order via WhatsApp</h1>
+          
+          <p class="font-body-md" style="color: var(--color-text-muted); max-width: 580px; margin: 0 auto; line-height: 1.6;">
+            At GREENLOOM, we provide personal guidance for every order. Chat directly with our Himalayan specialists on WhatsApp to choose your hemp clothing and lifestyle goods, confirm delivery, and receive dispatch updates.
+          </p>
+
+          <!-- 3-Step Flow -->
+          <div class="concierge-steps">
+            <div class="concierge-step-item">
+              <span class="step-num">1</span>
+              <h4 style="font-size: 14px; font-weight: 700; color: var(--color-primary); margin-bottom: 4px;">Choose Hemp Goods</h4>
+              <p style="font-size: 12px; color: var(--color-text-muted); line-height: 1.5; margin: 0;">Browse our catalog of pure Himalayan hemp apparel, accessories, and mountain crafts.</p>
+            </div>
+
+            <div class="concierge-step-item">
+              <span class="step-num" style="background: #25d366;">2</span>
+              <h4 style="font-size: 14px; font-weight: 700; color: var(--color-primary); margin-bottom: 4px;">Tap 'Order on WhatsApp'</h4>
+              <p style="font-size: 12px; color: var(--color-text-muted); line-height: 1.5; margin: 0;">Launches a pre-filled chat with your desired item and variant details.</p>
+            </div>
+
+            <div class="concierge-step-item">
+              <span class="step-num" style="background: var(--color-warm-gold-deep);">3</span>
+              <h4 style="font-size: 14px; font-weight: 700; color: var(--color-primary); margin-bottom: 4px;">Swift Express Delivery</h4>
+              <p style="font-size: 12px; color: var(--color-text-muted); line-height: 1.5; margin: 0;">Our team confirms your address, provides order info, and dispatches express.</p>
+            </div>
+          </div>
+
+          <!-- Action CTAs -->
+          <div class="concierge-actions">
+            <a href="https://wa.me/9779805616879?text=Hi%20GREENLOOM%2C%20I%20would%20like%20to%20place%20an%20order%20for%20Himalayan%20hemp%20products." 
+               target="_blank" rel="noopener noreferrer" class="btn-cta-primary"
+               style="flex: 1.2; height: 50px; background: #25d366; color: #fff; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35); text-decoration: none; justify-content: center; font-weight: 700;">
+              <span class="material-symbols-outlined" style="font-size: 20px;">chat</span>
+              <span>Chat on WhatsApp</span>
+            </a>
+            <a href="shop.html" class="btn-cta-primary" 
+               style="flex: 1; height: 50px; background: var(--color-surface-container); color: var(--color-primary); border: 1px solid rgba(74, 93, 49, 0.2); box-shadow: none; text-decoration: none; justify-content: center;">
+              <span class="material-symbols-outlined" style="font-size: 18px;">storefront</span>
+              <span>Browse Catalog</span>
+            </a>
+          </div>
+
+          <!-- Trust Features -->
+          <div class="concierge-trust-bar">
+            <div class="trust-stat">
+              <span class="material-symbols-outlined" style="font-size: 24px; color: var(--color-primary); margin-bottom: 4px;">eco</span>
+              <strong style="display: block; font-size: 12px; color: var(--color-primary);">100% Organically Grown</strong>
+              <span style="font-size: 11px; color: var(--color-text-muted);">Himalayan Mountains</span>
+            </div>
+            <div class="trust-stat">
+              <span class="material-symbols-outlined" style="font-size: 24px; color: var(--color-primary); margin-bottom: 4px;">handyman</span>
+              <strong style="display: block; font-size: 12px; color: var(--color-primary);">Artisan Tailored</strong>
+              <span style="font-size: 11px; color: var(--color-text-muted);">Master Loom Craft</span>
+            </div>
+            <div class="trust-stat">
+              <span class="material-symbols-outlined" style="font-size: 24px; color: var(--color-primary); margin-bottom: 4px;">local_shipping</span>
+              <strong style="display: block; font-size: 12px; color: var(--color-primary);">Express Delivery</strong>
+              <span style="font-size: 11px; color: var(--color-text-muted);">Doorstep Dispatch</span>
+            </div>
+            <div class="trust-stat">
+              <span class="material-symbols-outlined" style="font-size: 24px; color: #25d366; margin-bottom: 4px;">support_agent</span>
+              <strong style="display: block; font-size: 12px; color: var(--color-primary);">Direct Support</strong>
+              <span style="font-size: 11px; color: var(--color-text-muted);">+91 7880006164</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

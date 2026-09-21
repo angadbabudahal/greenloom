@@ -99,7 +99,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       success: true,
-      url: publicUrl,
+      url: (commitRes && commitRes.downloadUrl) ? commitRes.downloadUrl : publicUrl,
       repoPath: repoFilePath,
       filename,
       message: `Image successfully uploaded and committed to GitHub as ${filename}.`,

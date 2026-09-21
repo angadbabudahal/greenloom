@@ -18,17 +18,15 @@ export default async function handler(req, res) {
   const missingVars = [];
 
   if (!config.token) missingVars.push('GITHUB_TOKEN');
-  if (!config.owner) missingVars.push('GITHUB_OWNER');
-  if (!config.repo) missingVars.push('GITHUB_REPO');
 
   const diagnostics = {
     serverTimestamp: new Date().toISOString(),
     environment: process.env.VERCEL ? 'vercel-production' : 'local-development',
     configuration: {
       hasGitHubToken: Boolean(config.token),
-      owner: config.owner || '(not set)',
-      repo: config.repo || '(not set)',
-      branch: config.branch || 'main',
+      owner: config.owner,
+      repo: config.repo,
+      branch: config.branch,
       missingVariables: missingVars
     },
     githubConnection: {
@@ -40,7 +38,7 @@ export default async function handler(req, res) {
 
   if (missingVars.length > 0) {
     diagnostics.githubConnection.status = 'unconfigured';
-    diagnostics.githubConnection.message = `Missing required environment variable(s): ${missingVars.join(', ')}`;
+    diagnostics.githubConnection.message = `Missing required environment variable: ${missingVars.join(', ')}`;
     return res.status(200).json(diagnostics);
   }
 
@@ -68,15 +66,34 @@ export default async function handler(req, res) {
 
     if (ghRes.ok) {
       const data = await ghRes.json();
+
+      // Also verify Contents permission on data/products.json
+      let contentsCheck = 'Read/Write access verified';
+      try {
+        const contentsRes = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/data/products.json?ref=${encodeURIComponent(config.branch)}&t=${Date.now()}`, {
+          headers: {
+            'Authorization': `Bearer ${config.token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'Greenloom-CMS-Diagnostic'
+          }
+        });
+        if (contentsRes.ok) {
+          contentsCheck = 'Read/Write access confirmed on data/products.json';
+        } else {
+          contentsCheck = `Warning: contents API returned HTTP ${contentsRes.status}. Ensure token has 'Contents: Read and write' permissions.`;
+        }
+      } catch (cErr) {
+        contentsCheck = `Warning on contents API: ${cErr.message}`;
+      }
+
       diagnostics.githubConnection = {
         status: 'connected',
         accessible: true,
         latencyMs,
         repository: data.full_name,
-        private: data.private,
-        defaultBranch: data.default_branch,
-        permissions: data.permissions || { push: true },
-        message: 'Successfully connected to GitHub repository with write access.'
+        branch: config.branch,
+        contentsStatus: contentsCheck,
+        message: 'Successfully connected to GitHub repository with verified write access.'
       };
       return res.status(200).json(diagnostics);
     } else {

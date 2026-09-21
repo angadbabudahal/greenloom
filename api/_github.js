@@ -8,10 +8,10 @@ import path from 'path';
 
 export function getGitHubConfig() {
   return {
-    token: (process.env.GITHUB_TOKEN || '').trim(),
-    owner: (process.env.GITHUB_OWNER || 'angadbabudahal').trim(),
-    repo: (process.env.GITHUB_REPO || 'greenloom').trim(),
-    branch: (process.env.GITHUB_BRANCH || 'main').trim()
+    token: (process.env.GITHUB_TOKEN || process.env.GH_TOKEN || process.env.GITHUB_PAT || '').trim(),
+    owner: (process.env.GITHUB_OWNER || process.env.VERCEL_GIT_REPO_OWNER || 'angadbabudahal').trim(),
+    repo: (process.env.GITHUB_REPO || process.env.VERCEL_GIT_REPO_SLUG || 'greenloom').trim(),
+    branch: (process.env.GITHUB_BRANCH || process.env.VERCEL_GIT_COMMIT_REF || 'main').trim()
   };
 }
 
@@ -65,13 +65,14 @@ export async function fetchGitHubFile(filePath) {
   }
 
   const cleanPath = filePath.replace(/^\/+/, '');
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}?ref=${encodeURIComponent(branch)}`;
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${cleanPath}?ref=${encodeURIComponent(branch)}&t=${Date.now()}`;
 
   const res = await fetchWithTimeout(url, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/vnd.github.v3+json',
-      'User-Agent': 'Greenloom-CMS'
+      'User-Agent': 'Greenloom-CMS',
+      'Cache-Control': 'no-cache'
     }
   }, 9000);
 
@@ -254,7 +255,12 @@ export async function commitGitHubBinary(filePath, base64Data, message, retries 
       }
 
       const result = await res.json();
-      return { success: true, commitSha: result.commit?.sha };
+      const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${cleanPath}`;
+      return { 
+        success: true, 
+        commitSha: result.commit?.sha,
+        downloadUrl: result.content?.download_url || rawUrl
+      };
     } catch (err) {
       if (attempt >= retries) throw err;
       await new Promise(r => setTimeout(r, 400 * attempt));

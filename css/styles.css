@@ -1612,16 +1612,29 @@ button {
 
 .contact-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   font-size: 13px;
   color: rgba(250, 248, 244, 0.78);
   margin-bottom: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a.contact-row:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+a.contact-row:hover .material-symbols-outlined {
+  color: var(--color-gold-light);
 }
 
 .contact-row .material-symbols-outlined {
   font-size: 18px;
   color: var(--color-gold);
+  flex-shrink: 0;
+  transition: color 0.2s ease;
 }
 
 .footer-copyright {

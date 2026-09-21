@@ -689,7 +689,7 @@ class HempStoreApp {
           { icon: "fitness_center", title: "Clean Plant Nutrition", desc: "Abundant in natural plant protein and balanced omegas with exceptional cellular bioavailability." },
           { icon: "favorite", title: "Heart & Vitality Support", desc: "Golden 3:1 ratio of Omega-6 to Omega-3 essential fatty acids supporting daily cardiovascular vitality." },
           { icon: "bolt", title: "Sustained Natural Energy", desc: "Packed with essential minerals to replenish active bodies without crashes or fatigue." },
-          { icon: "eco", title: "100% Himalayan Raw Harvest", desc: "Sustainably grown in Uttarakhand foothills by traditional local farmer collectives." }
+          { icon: "eco", title: "100% Himalayan Raw Harvest", desc: "Sustainably grown in Himalayan foothills by traditional local farmer collectives." }
         ];
       } else if (prod.category === 'personal-care') {
         benefits = [

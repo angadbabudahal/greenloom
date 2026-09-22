@@ -1590,6 +1590,52 @@ button {
   text-align: left;
 }
 
+.footer-social-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.footer-social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(202, 165, 98, 0.1);
+  border: 1px solid rgba(202, 165, 98, 0.32);
+  color: var(--color-gold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.footer-social-btn svg {
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.footer-social-btn:hover {
+  background: var(--color-gold-gradient);
+  color: #0D1A13;
+  border-color: var(--color-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(202, 165, 98, 0.45);
+}
+
+.footer-social-btn:hover svg {
+  transform: scale(1.12);
+}
+
+.footer-social-divider {
+  width: 1px;
+  height: 18px;
+  background-color: rgba(202, 165, 98, 0.25);
+  margin: 0 2px;
+}
+
 .footer-admin-trigger-row {
   display: flex;
   justify-content: flex-start;
@@ -1670,6 +1716,22 @@ button {
 
   .footer-admin-trigger-row {
     justify-content: flex-start;
+  }
+
+  .footer-social-row {
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .footer-social-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .footer-social-btn svg {
+    width: 15px;
+    height: 15px;
   }
 }
 

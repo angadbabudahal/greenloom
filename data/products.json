@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-hemp-tea-6169",
+    "slug": "greenloom-hemp-tea",
+    "name": "GREENLOOM HEMP Tea",
+    "shortName": "Hemp Tea",
+    "category": "nutrition",
+    "categoryLabel": "Superfood Nutrition",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 350,
+    "mrp": 450,
+    "discountPercent": 22,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "100% ORGANIC"
+    ],
+    "image": "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-tea-234307.jpg",
+    "gallery": [
+      "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-tea-234307.jpg"
+    ],
+    "description": "TASTE the Organic Hemp Tea",
+    "isBestSeller": false,
+    "isHotSelling": true,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 350,
+        "mrp": 450
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-hemp-soap-6511",
     "slug": "greenloom-hemp-soap",
     "name": "GREENLOOM Hemp Soap",

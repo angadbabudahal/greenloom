@@ -437,6 +437,18 @@ button {
   box-shadow: 0 3px 12px rgba(202, 165, 98, 0.35);
 }
 
+.support-pill-btn svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.support-pill-btn:hover svg {
+  transform: scale(1.08);
+}
+
 @media (max-width: 768px) {
   :root {
     --header-height: 80px;

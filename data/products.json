@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-bamboo-scarf-8702",
+    "slug": "greenloom-bamboo-scarf",
+    "name": "GREENLOOM Bamboo Scarf",
+    "shortName": "Hemp Scarf",
+    "category": "fashion",
+    "categoryLabel": "Sustainable Gear",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 1050,
+    "mrp": 1163,
+    "discountPercent": 10,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "100% ORGANIC"
+    ],
+    "image": "https://lh3.googleusercontent.com/aida-public/AB6AXuC5v-SZTng-JiJAAz1MRat5-AEM9g9wxY173IsjaU091E2dbsI_5pWR3oYg-qNOk7MQlAeTgb2LtfjUyKUxABk6_L_Non32ruv2JQ-OKTs0qIsZ6a55BYoI-gU404eOXJ5_0dG3hvyzCeTXZ84MpK3RlSpJpPgDspj6wkwG-wYhvuQIkPz9cw2Bmd9lCDkZmftzUEPKSMcwqMZdhNVwI2if7bZgcXQqmWXQDPFc4loT2xB7U16Or4_3",
+    "gallery": [
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuC5v-SZTng-JiJAAz1MRat5-AEM9g9wxY173IsjaU091E2dbsI_5pWR3oYg-qNOk7MQlAeTgb2LtfjUyKUxABk6_L_Non32ruv2JQ-OKTs0qIsZ6a55BYoI-gU404eOXJ5_0dG3hvyzCeTXZ84MpK3RlSpJpPgDspj6wkwG-wYhvuQIkPz9cw2Bmd9lCDkZmftzUEPKSMcwqMZdhNVwI2if7bZgcXQqmWXQDPFc4loT2xB7U16Or4_3"
+    ],
+    "description": "Scarf to match your vibe",
+    "isBestSeller": true,
+    "isHotSelling": false,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 1050,
+        "mrp": 1163
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-full-shirt-0810",
     "slug": "greenloom-full-shirt",
     "name": "GREENLOOM Full Shirt",

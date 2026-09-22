@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-hemp-purse-1306",
+    "slug": "greenloom-hemp-purse",
+    "name": "GREENLOOM Hemp Purse",
+    "shortName": "Hemp Purse",
+    "category": "fashion",
+    "categoryLabel": "Sustainable Gear",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 300,
+    "mrp": 300,
+    "discountPercent": 0,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "Hot Selling"
+    ],
+    "image": "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-purse-329507.jpg",
+    "gallery": [
+      "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-purse-329507.jpg"
+    ],
+    "description": "Purses made up of Hemp",
+    "isBestSeller": false,
+    "isHotSelling": true,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 300,
+        "mrp": 300
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-hemp-tea-6169",
     "slug": "greenloom-hemp-tea",
     "name": "GREENLOOM HEMP Tea",

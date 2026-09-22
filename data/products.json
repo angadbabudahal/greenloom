@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-half-coat-5011",
+    "slug": "greenloom-half-coat",
+    "name": "Greenloom half coat",
+    "shortName": "Greenloom traditional",
+    "category": "fashion",
+    "categoryLabel": "Sustainable Gear",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 4500,
+    "mrp": 4699,
+    "discountPercent": 4,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "80% hemp 20% cotton"
+    ],
+    "image": "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-half-coat-673172.jpg",
+    "gallery": [
+      "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-half-coat-673172.jpg"
+    ],
+    "description": "Hemp halfcoat",
+    "isBestSeller": true,
+    "isHotSelling": false,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 4500,
+        "mrp": 4699
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-hemp-purse-1306",
     "slug": "greenloom-hemp-purse",
     "name": "GREENLOOM Hemp Purse",

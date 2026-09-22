@@ -1581,7 +1581,7 @@ button {
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   width: 100%;
-  max-width: 480px;
+  max-width: 440px;
 }
 
 .footer-store-photo-card {
@@ -1590,15 +1590,15 @@ button {
   overflow: hidden;
   border: 1px solid rgba(202, 165, 98, 0.28);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 4;
   background: rgba(202, 165, 98, 0.06);
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.3s ease;
 }
 
 .footer-store-photo-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(202, 165, 98, 0.6);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  transform: translateY(-3px) scale(1.02);
+  border-color: rgba(202, 165, 98, 0.65);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 0 16px rgba(202, 165, 98, 0.2);
 }
 
 .footer-store-photo {
@@ -1606,6 +1606,31 @@ button {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s ease;
+}
+
+.footer-store-photo-card:hover .footer-store-photo {
+  transform: scale(1.05);
+}
+
+.footer-store-photo-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(13, 26, 19, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(202, 165, 98, 0.35);
+  color: var(--color-gold);
+  font-family: var(--font-headline);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 5px;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .footer-hq-col {
@@ -1725,6 +1750,23 @@ button {
 
   .footer-media-col {
     min-height: 120px;
+  }
+
+  .footer-store-gallery {
+    gap: 8px;
+    max-width: 100%;
+  }
+
+  .footer-store-photo-card {
+    border-radius: 8px;
+  }
+
+  .footer-store-photo-badge {
+    font-size: 8.5px;
+    padding: 2px 5px;
+    bottom: 4px;
+    left: 4px;
+    border-radius: 4px;
   }
 
   .footer-media-link {

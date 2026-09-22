@@ -60,6 +60,16 @@
     "gallery": [
       "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-purse-329507.jpg"
     ],
+    "sizes": [
+      "Standard"
+    ],
+    "sizeText": "Standard",
+    "colors": [
+      "Natural",
+      "Red",
+      "Blue"
+    ],
+    "colorText": "Natural, Red, Blue",
     "description": "Purses made up of Hemp",
     "isBestSeller": false,
     "isHotSelling": true,

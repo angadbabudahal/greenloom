@@ -34,6 +34,29 @@ async function loadCurrentCatalog() {
   return [];
 }
 
+function parseOptionsList(input) {
+  if (!input) return [];
+  if (Array.isArray(input)) return input.map(s => String(s).trim()).filter(Boolean);
+  if (typeof input !== 'string') return [];
+  const trimmed = input.trim();
+  if (!trimmed) return [];
+  
+  const quoted = trimmed.match(/"([^"]+)"|'([^']+)'/g);
+  if (quoted && quoted.length > 0) {
+    return quoted.map(q => q.replace(/["']/g, '').trim()).filter(Boolean);
+  }
+  
+  if (/[,;/|]/.test(trimmed)) {
+    return trimmed.split(/[,;/|]+/).map(s => s.trim()).filter(Boolean);
+  }
+  
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length > 1 && words.every(w => w.length <= 4 || ['red', 'blue', 'green', 'black', 'white', 'grey', 'gray', 'pink', 'yellow', 'brown', 'purple', 'orange', 'natural', 'olive', 'khaki', 'beige'].includes(w.toLowerCase()))) {
+    return words;
+  }
+  return [trimmed];
+}
+
 function parseRequestBody(req) {
   if (typeof req.body === 'object' && req.body !== null) return req.body;
   if (typeof req.body === 'string') {
@@ -104,6 +127,10 @@ export default async function handler(req, res) {
         rating: Number(product.rating) || 5.0,
         reviewCount: Number(product.reviewCount) || 1,
         badges: Array.isArray(product.badges) ? product.badges : ['100% ORGANIC'],
+        sizes: parseOptionsList(product.sizes || product.sizeText),
+        sizeText: typeof product.sizeText === 'string' ? product.sizeText : (Array.isArray(product.sizes) ? product.sizes.join(', ') : ''),
+        colors: parseOptionsList(product.colors || product.colorText),
+        colorText: typeof product.colorText === 'string' ? product.colorText : (Array.isArray(product.colors) ? product.colors.join(', ') : ''),
         image: product.image || 'images/greenloom-emblem.png',
         gallery: Array.isArray(product.gallery) && product.gallery.length > 0 
           ? product.gallery 
@@ -171,6 +198,18 @@ export default async function handler(req, res) {
         price: updatedPrice,
         mrp: updatedMrp,
         discountPercent,
+        sizes: product.sizes !== undefined || product.sizeText !== undefined 
+          ? parseOptionsList(product.sizes !== undefined ? product.sizes : product.sizeText)
+          : (existing.sizes || []),
+        sizeText: typeof product.sizeText === 'string' 
+          ? product.sizeText 
+          : (product.sizes ? (Array.isArray(product.sizes) ? product.sizes.join(', ') : String(product.sizes)) : (existing.sizeText || '')),
+        colors: product.colors !== undefined || product.colorText !== undefined
+          ? parseOptionsList(product.colors !== undefined ? product.colors : product.colorText)
+          : (existing.colors || []),
+        colorText: typeof product.colorText === 'string'
+          ? product.colorText
+          : (product.colors ? (Array.isArray(product.colors) ? product.colors.join(', ') : String(product.colors)) : (existing.colorText || '')),
         gallery: Array.isArray(product.gallery) && product.gallery.length > 0
           ? product.gallery
           : [product.image || existing.image]

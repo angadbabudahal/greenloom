@@ -2180,6 +2180,46 @@ a.contact-row:hover .material-symbols-outlined {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
+/* Option Chips (Sizes & Colors) */
+.option-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.option-chip-btn {
+  min-width: 44px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--color-surface-container-low);
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid rgba(202, 165, 98, 0.25);
+}
+
+.option-chip-btn:hover {
+  border-color: var(--color-gold);
+  background: var(--color-surface-card);
+  transform: translateY(-1px);
+}
+
+.option-chip-btn.active {
+  background: var(--color-gold-gradient);
+  color: #0D1A13;
+  font-weight: 700;
+  border-color: var(--color-gold);
+  box-shadow: 0 3px 12px rgba(202, 165, 98, 0.35);
+}
+
 /* Dosage Table & Protocol */
 .dosage-table {
   width: 100%;

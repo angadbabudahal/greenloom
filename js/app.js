@@ -28,6 +28,29 @@ export function isLegacyProduct(p) {
   return false;
 }
 
+export function parseOptionsList(input) {
+  if (!input) return [];
+  if (Array.isArray(input)) return input.map(s => String(s).trim()).filter(Boolean);
+  if (typeof input !== 'string') return [];
+  const trimmed = input.trim();
+  if (!trimmed) return [];
+  
+  const quoted = trimmed.match(/"([^"]+)"|'([^']+)'/g);
+  if (quoted && quoted.length > 0) {
+    return quoted.map(q => q.replace(/["']/g, '').trim()).filter(Boolean);
+  }
+  
+  if (/[,;/|]/.test(trimmed)) {
+    return trimmed.split(/[,;/|]+/).map(s => s.trim()).filter(Boolean);
+  }
+  
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  if (words.length > 1 && words.every(w => w.length <= 4 || ['red', 'blue', 'green', 'black', 'white', 'grey', 'gray', 'pink', 'yellow', 'brown', 'purple', 'orange', 'natural', 'olive', 'khaki', 'beige'].includes(w.toLowerCase()))) {
+    return words;
+  }
+  return [trimmed];
+}
+
 class HempStoreApp {
   constructor() {
     this.products = [...PRODUCTS];
@@ -35,6 +58,8 @@ class HempStoreApp {
     this.pendingDeleteProductId = null;
 
     this.selectedSize = 0;
+    this.selectedSizeOption = 0;
+    this.selectedColorOption = 0;
     this.currentProductQty = 1;
     this.activeProduct = this.products[0];
     this.discountPercent = 0;
@@ -242,12 +267,13 @@ class HempStoreApp {
   }
 
   // Helper: Generate structured WhatsApp ordering URL
-  getWhatsAppUrl(prod, size = '', qty = 1, customPrice = null) {
-    const sizeStr = size ? ` [Pack: ${size}]` : '';
+  getWhatsAppUrl(prod, size = '', qty = 1, customPrice = null, color = '') {
+    const sizeStr = size ? ` [Size: ${size}]` : '';
+    const colorStr = color ? ` [Color: ${color}]` : '';
     const qtyStr = qty > 1 ? ` (Quantity: ${qty})` : '';
     const unitPrice = customPrice !== null ? customPrice : (prod && prod.price ? Number(prod.price) : 0);
     const priceStr = unitPrice ? ` - Total: NPR ${Number(unitPrice * qty).toLocaleString('en-NP')}` : '';
-    const text = `Hi GREENLOOM, I would like to order: ${prod ? (prod.shortName || prod.name) : 'GREENLOOM Himalayan Hemp'}${sizeStr}${qtyStr}${priceStr}. Please guide me with payment and delivery details.`;
+    const text = `Hi GREENLOOM, I would like to order: ${prod ? (prod.shortName || prod.name) : 'GREENLOOM Himalayan Hemp'}${sizeStr}${colorStr}${qtyStr}${priceStr}. Please guide me with payment and delivery details.`;
     return `https://wa.me/9779805616879?text=${encodeURIComponent(text)}`;
   }
 
@@ -371,6 +397,8 @@ class HempStoreApp {
     }
 
     this.selectedSize = (this.activeProduct.sizeVariants && this.activeProduct.sizeVariants.length > 1) ? 1 : 0;
+    this.selectedSizeOption = 0;
+    this.selectedColorOption = 0;
     this.currentProductQty = 1;
 
     // Render active product into the page DOM
@@ -452,12 +480,55 @@ class HempStoreApp {
       `).join('');
     }
 
-    // 6. Dynamic Variant Selector
+    // 6. Dynamic Garment / Product Sizes Selector (if sizes configured)
+    const sizesContainer = document.getElementById('product-sizes-container');
+    const sizesGrid = document.getElementById('product-sizes-grid');
+    const sizeHint = document.getElementById('display-selected-size-hint');
+    const hasCustomSizes = Array.isArray(this.activeProduct.sizes) && this.activeProduct.sizes.length > 0;
+
+    if (hasCustomSizes) {
+      if (sizesContainer) sizesContainer.style.display = 'block';
+      const activeSize = this.activeProduct.sizes[this.selectedSizeOption] || this.activeProduct.sizes[0];
+      if (sizeHint) sizeHint.textContent = activeSize;
+      if (sizesGrid) {
+        sizesGrid.innerHTML = this.activeProduct.sizes.map((s, idx) => `
+          <button type="button" class="option-chip-btn size-chip-btn ${idx === this.selectedSizeOption ? 'active' : ''}" data-index="${idx}" data-size="${s}">
+            <span>${s}</span>
+          </button>
+        `).join('');
+      }
+    } else {
+      if (sizesContainer) sizesContainer.style.display = 'none';
+    }
+
+    // Dynamic Colors Selector (if colors configured)
+    const colorsContainer = document.getElementById('product-colors-container');
+    const colorsGrid = document.getElementById('product-colors-grid');
+    const colorHint = document.getElementById('display-selected-color-hint');
+    const hasCustomColors = Array.isArray(this.activeProduct.colors) && this.activeProduct.colors.length > 0;
+
+    if (hasCustomColors) {
+      if (colorsContainer) colorsContainer.style.display = 'block';
+      const activeColor = this.activeProduct.colors[this.selectedColorOption] || this.activeProduct.colors[0];
+      if (colorHint) colorHint.textContent = activeColor;
+      if (colorsGrid) {
+        colorsGrid.innerHTML = this.activeProduct.colors.map((c, idx) => `
+          <button type="button" class="option-chip-btn color-chip-btn ${idx === this.selectedColorOption ? 'active' : ''}" data-index="${idx}" data-color="${c}">
+            <span>${c}</span>
+          </button>
+        `).join('');
+      }
+    } else {
+      if (colorsContainer) colorsContainer.style.display = 'none';
+    }
+
+    // Dynamic Pack Sizing / Volume Variants
     const varContainer = document.getElementById('product-variants-container');
     const varGrid = document.getElementById('product-variants-grid');
     const displayHint = document.getElementById('display-size-hint');
+    const hasMultiPackVariants = this.activeProduct.sizeVariants && this.activeProduct.sizeVariants.length > 1;
 
-    if (this.activeProduct.sizeVariants && this.activeProduct.sizeVariants.length > 0) {
+    if (hasMultiPackVariants) {
       if (varContainer) varContainer.style.display = 'block';
       if (displayHint) displayHint.textContent = this.activeProduct.sizeVariants[this.selectedSize]?.duration || 'Select size option';
       if (varGrid) {
@@ -469,7 +540,11 @@ class HempStoreApp {
           </button>
         `).join('');
       }
+    } else if (hasCustomSizes) {
+      // Custom sizes are shown above, so hide the single default standard pack container
+      if (varContainer) varContainer.style.display = 'none';
     } else {
+      if (varContainer) varContainer.style.display = 'block';
       if (displayHint) displayHint.textContent = 'Standard Himalayan Pack';
       if (varGrid) {
         varGrid.innerHTML = `
@@ -579,6 +654,27 @@ class HempStoreApp {
       });
     });
 
+    document.querySelectorAll('.size-chip-btn').forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.size-chip-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.selectedSizeOption = idx;
+        const hint = document.getElementById('display-selected-size-hint');
+        if (hint && this.activeProduct.sizes) hint.textContent = this.activeProduct.sizes[idx] || '';
+        this.updateProductPricingDisplay();
+      });
+    });
+
+    document.querySelectorAll('.color-chip-btn').forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.color-chip-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.selectedColorOption = idx;
+        const hint = document.getElementById('display-selected-color-hint');
+        if (hint && this.activeProduct.colors) hint.textContent = this.activeProduct.colors[idx] || '';
+        this.updateProductPricingDisplay();
+      });
+    });
 
     const qtyMinus = document.getElementById('sticky-qty-minus');
     const qtyPlus = document.getElementById('sticky-qty-plus');
@@ -607,9 +703,21 @@ class HempStoreApp {
     let currentSizeLabel = '';
     let currentUnitPrice = Number(this.activeProduct.price) || 0;
 
-    if (this.activeProduct.sizeVariants && this.activeProduct.sizeVariants.length > 0) {
+    if (this.activeProduct.sizes && this.activeProduct.sizes.length > 0) {
+      currentSizeLabel = this.activeProduct.sizes[this.selectedSizeOption] || this.activeProduct.sizes[0] || '';
+    } else if (this.activeProduct.sizeVariants && this.activeProduct.sizeVariants.length > 0) {
       const size = this.activeProduct.sizeVariants[this.selectedSize] || this.activeProduct.sizeVariants[0];
       currentSizeLabel = size.volume || size.label || size.duration || '';
+      currentUnitPrice = size.price;
+    }
+
+    let currentColorLabel = '';
+    if (this.activeProduct.colors && this.activeProduct.colors.length > 0) {
+      currentColorLabel = this.activeProduct.colors[this.selectedColorOption] || this.activeProduct.colors[0] || '';
+    }
+
+    if (this.activeProduct.sizeVariants && this.activeProduct.sizeVariants.length > 1) {
+      const size = this.activeProduct.sizeVariants[this.selectedSize] || this.activeProduct.sizeVariants[0];
       currentUnitPrice = size.price;
       if (displayPrice) displayPrice.textContent = `NPR ${Number(size.price).toLocaleString('en-NP')}`;
       if (displayMrp) displayMrp.textContent = `NPR ${Number(size.mrp || size.price).toLocaleString('en-NP')}`;
@@ -650,7 +758,7 @@ class HempStoreApp {
     }
 
     // Dynamically update WhatsApp order buttons with selected variant & quantity
-    const waUrl = this.getWhatsAppUrl(this.activeProduct, currentSizeLabel, this.currentProductQty, currentUnitPrice);
+    const waUrl = this.getWhatsAppUrl(this.activeProduct, currentSizeLabel, this.currentProductQty, currentUnitPrice, currentColorLabel);
     const mainWaBtn = document.getElementById('product-whatsapp-btn');
     if (mainWaBtn) mainWaBtn.href = waUrl;
     const stickyWaBtn = document.getElementById('sticky-whatsapp-btn');
@@ -913,6 +1021,20 @@ class HempStoreApp {
                       <label class="admin-form-label" for="admin-field-mrp">ORIGINAL MRP (NPR)</label>
                       <input type="number" id="admin-field-mrp" class="admin-form-input" min="1" step="1" 
                              placeholder="e.g. 2400 (for strike-through)">
+                    </div>
+
+                    <!-- Available Sizes (Optional) -->
+                    <div class="admin-form-group">
+                      <label class="admin-form-label" for="admin-field-sizes">AVAILABLE SIZES (OPTIONAL)</label>
+                      <input type="text" id="admin-field-sizes" class="admin-form-input" 
+                             placeholder="e.g. S, M, L, XL or Free Size">
+                    </div>
+
+                    <!-- Available Colors (Optional) -->
+                    <div class="admin-form-group">
+                      <label class="admin-form-label" for="admin-field-colors">AVAILABLE COLORS (OPTIONAL)</label>
+                      <input type="text" id="admin-field-colors" class="admin-form-input" 
+                             placeholder="e.g. Natural, Red, Blue, Forest Green">
                     </div>
 
                     <!-- Promotional Badge -->
@@ -1376,7 +1498,9 @@ class HempStoreApp {
           p.name.toLowerCase().includes(query) ||
           (p.categoryLabel && p.categoryLabel.toLowerCase().includes(query)) ||
           p.id.toLowerCase().includes(query) ||
-          (p.badges && p.badges.some(b => b.toLowerCase().includes(query)))
+          (p.badges && p.badges.some(b => b.toLowerCase().includes(query))) ||
+          (p.sizes && p.sizes.some(s => s.toLowerCase().includes(query))) ||
+          (p.colors && p.colors.some(c => c.toLowerCase().includes(query)))
         );
 
     if (countEl) {
@@ -1402,6 +1526,8 @@ class HempStoreApp {
             <span class="admin-prod-price">NPR ${Number(prod.price).toLocaleString('en-NP')}</span>
             ${prod.mrp ? `<span class="admin-prod-mrp">NPR ${Number(prod.mrp).toLocaleString('en-NP')}</span>` : ''}
             <span class="admin-tag">${prod.categoryLabel || prod.category || 'General'}</span>
+            ${prod.sizes && prod.sizes.length > 0 ? `<span class="admin-tag" title="Available Sizes">Sizes: ${prod.sizes.join(', ')}</span>` : ''}
+            ${prod.colors && prod.colors.length > 0 ? `<span class="admin-tag" title="Available Colors">Colors: ${prod.colors.join(', ')}</span>` : ''}
             ${prod.isBestSeller ? '<span class="admin-tag bestseller">Best Seller</span>' : ''}
             ${prod.isHotSelling ? '<span class="admin-tag hotselling">Hot Selling</span>' : ''}
             ${prod.badges && prod.badges[0] ? `<span class="admin-tag">${prod.badges[0]}</span>` : ''}
@@ -1458,6 +1584,8 @@ class HempStoreApp {
       document.getElementById('admin-field-category').value = prod.category || 'nutrition';
       document.getElementById('admin-field-price').value = prod.price || '';
       document.getElementById('admin-field-mrp').value = prod.mrp || '';
+      document.getElementById('admin-field-sizes').value = prod.sizeText || (Array.isArray(prod.sizes) ? prod.sizes.join(', ') : '');
+      document.getElementById('admin-field-colors').value = prod.colorText || (Array.isArray(prod.colors) ? prod.colors.join(', ') : '');
       document.getElementById('admin-field-badge').value = (prod.badges && prod.badges.join(', ')) || '';
       document.getElementById('admin-field-image').value = prod.image || '';
       document.getElementById('admin-field-desc').value = prod.description || '';
@@ -1472,6 +1600,8 @@ class HempStoreApp {
       document.getElementById('admin-field-category').value = 'nutrition';
       document.getElementById('admin-field-price').value = '899';
       document.getElementById('admin-field-mrp').value = '1099';
+      document.getElementById('admin-field-sizes').value = '';
+      document.getElementById('admin-field-colors').value = '';
       document.getElementById('admin-field-badge').value = '100% ORGANIC';
       document.getElementById('admin-field-image').value = 'https://lh3.googleusercontent.com/aida-public/AB6AXuC5v-SZTng-JiJAAz1MRat5-AEM9g9wxY173IsjaU091E2dbsI_5pWR3oYg-qNOk7MQlAeTgb2LtfjUyKUxABk6_L_Non32ruv2JQ-OKTs0qIsZ6a55BYoI-gU404eOXJ5_0dG3hvyzCeTXZ84MpK3RlSpJpPgDspj6wkwG-wYhvuQIkPz9cw2Bmd9lCDkZmftzUEPKSMcwqMZdhNVwI2if7bZgcXQqmWXQDPFc4loT2xB7U16Or4_3';
       document.getElementById('admin-field-desc').value = '';
@@ -1490,6 +1620,10 @@ class HempStoreApp {
     const category = document.getElementById('admin-field-category').value;
     const price = Number(document.getElementById('admin-field-price').value);
     const mrp = Number(document.getElementById('admin-field-mrp').value) || price;
+    const sizeText = (document.getElementById('admin-field-sizes')?.value || '').trim();
+    const colorText = (document.getElementById('admin-field-colors')?.value || '').trim();
+    const sizes = parseOptionsList(sizeText);
+    const colors = parseOptionsList(colorText);
     const badgeText = document.getElementById('admin-field-badge').value.trim();
     let image = document.getElementById('admin-field-image').value.trim() || 'images/greenloom-emblem.png';
     const description = document.getElementById('admin-field-desc').value.trim();
@@ -1558,6 +1692,10 @@ class HempStoreApp {
         mrp,
         discountPercent,
         badges,
+        sizes,
+        sizeText,
+        colors,
+        colorText,
         image,
         gallery: [image],
         description,

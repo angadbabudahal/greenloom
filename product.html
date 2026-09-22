@@ -141,6 +141,24 @@
             <div class="potency-grid" id="product-variants-grid" style="grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));"></div>
           </div>
 
+          <!-- Dynamic Product Sizes (Optional) -->
+          <div class="variant-selector-group" id="product-sizes-container" style="display: none;">
+            <div class="variant-label-row">
+              <span class="font-label-md" style="color: var(--color-primary); font-weight: 700;">Available Sizes</span>
+              <span class="font-label-sm" style="color: var(--color-warm-gold-deep); font-weight: 700;" id="display-selected-size-hint"></span>
+            </div>
+            <div class="option-chips-row" id="product-sizes-grid"></div>
+          </div>
+
+          <!-- Dynamic Product Colors (Optional) -->
+          <div class="variant-selector-group" id="product-colors-container" style="display: none;">
+            <div class="variant-label-row">
+              <span class="font-label-md" style="color: var(--color-primary); font-weight: 700;">Available Colors</span>
+              <span class="font-label-sm" style="color: var(--color-warm-gold-deep); font-weight: 700;" id="display-selected-color-hint"></span>
+            </div>
+            <div class="option-chips-row" id="product-colors-grid"></div>
+          </div>
+
           <!-- Product Short Description -->
           <div id="product-short-description" style="background: var(--color-surface-container-low); padding: 14px 16px; border-radius: var(--radius-lg); font-size: 13px; line-height: 1.6; color: var(--color-on-surface-variant);"></div>
 

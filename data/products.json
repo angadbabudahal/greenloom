@@ -288,9 +288,9 @@
     "categoryLabel": "Sustainable Gear",
     "brand": "GREENLOOM",
     "brandLogo": "images/greenloom-emblem.png",
-    "price": 899,
-    "mrp": 1099,
-    "discountPercent": 18,
+    "price": 1800,
+    "mrp": 1999,
+    "discountPercent": 10,
     "rating": 5,
     "reviewCount": 1,
     "badges": [

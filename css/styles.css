@@ -773,9 +773,9 @@ button {
 }
 
 .pill-badge.herbal {
-  background-color: var(--color-pale-herbal-cream);
-  color: var(--color-deep-forest-charcoal);
-  border: 1px solid rgba(202, 165, 98, 0.28);
+  background-color: #E2F2E6;
+  color: #0E361D;
+  border: 1px solid rgba(34, 112, 60, 0.25);
 }
 
 .pill-badge.hot-red {
@@ -785,9 +785,9 @@ button {
 }
 
 .pill-badge.olive {
-  background-color: var(--color-tertiary-fixed);
-  color: var(--color-on-tertiary-fixed);
-  border: 1px solid rgba(202, 165, 98, 0.28);
+  background-color: #E2F2E6;
+  color: #0E361D;
+  border: 1px solid rgba(34, 112, 60, 0.25);
 }
 
 

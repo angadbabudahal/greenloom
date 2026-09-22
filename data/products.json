@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-hemp-shorts-0702",
+    "slug": "greenloom-hemp-shorts",
+    "name": "GREENLOOM Hemp Shorts",
+    "shortName": "Hemp Shorts",
+    "category": "fashion",
+    "categoryLabel": "Sustainable Gear",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 550,
+    "mrp": 699,
+    "discountPercent": 21,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "55% Hemp 45% Cotton"
+    ],
+    "image": "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-shorts-968943.jpg",
+    "gallery": [
+      "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-shorts-968943.jpg"
+    ],
+    "description": "Shorts",
+    "isBestSeller": true,
+    "isHotSelling": true,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 550,
+        "mrp": 699
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-daura-suruwal-8524",
     "slug": "greenloom-daura-suruwal",
     "name": "GREENLOOM Daura Suruwal",

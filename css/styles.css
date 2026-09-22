@@ -762,28 +762,32 @@ button {
 .pill-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 12.5px;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  line-height: 1.25;
 }
 
 .pill-badge.herbal {
   background-color: var(--color-pale-herbal-cream);
   color: var(--color-deep-forest-charcoal);
+  border: 1px solid rgba(202, 165, 98, 0.28);
 }
 
 .pill-badge.hot-red {
   background-color: var(--color-badge-hot-red);
   color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
 .pill-badge.olive {
   background-color: var(--color-tertiary-fixed);
   color: var(--color-on-tertiary-fixed);
+  border: 1px solid rgba(202, 165, 98, 0.28);
 }
 
 
@@ -999,10 +1003,13 @@ button {
   top: 8px;
   left: 8px;
   z-index: 4;
+  font-size: 11.5px;
+  padding: 4px 9px;
+  border-radius: 4px;
 }
 
 .card-category-tag {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-text-muted);
   text-transform: uppercase;
   font-weight: 700;
@@ -1990,7 +1997,7 @@ a.contact-row:hover .material-symbols-outlined {
 .size-pill-btn {
   flex: 1;
   height: 44px;
-  border-radius: var(--radius-full);
+  border-radius: 4px;
   background: var(--color-surface-container-low);
   color: var(--color-primary);
   font-size: 13px;

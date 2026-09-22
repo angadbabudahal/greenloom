@@ -265,7 +265,7 @@ class HempStoreApp {
       <div class="product-card-compact">
         <div class="card-img-wrap">
           ${prod.badges && prod.badges[0] ? `
-            <span class="pill-badge hot-red card-tag-badge" style="font-size: 10px; padding: 3px 8px;">${prod.badges[0]}</span>
+            <span class="pill-badge hot-red card-tag-badge">${prod.badges[0]}</span>
           ` : ''}
           <a href="product.html?id=${encodeURIComponent(prod.id)}" target="_blank" rel="noopener noreferrer">
             <img src="${prod.image}" alt="${prod.name}" class="card-img">

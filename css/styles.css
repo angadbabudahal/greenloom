@@ -1404,6 +1404,18 @@ button {
   font-size: 22px;
 }
 
+.hemp-icon {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.guarantee-icon-wrap .hemp-icon {
+  width: 24px;
+  height: 24px;
+}
+
 .guarantee-title {
   font-size: 12px;
   font-weight: 700;

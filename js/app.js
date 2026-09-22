@@ -424,7 +424,7 @@ class HempStoreApp {
         : ['100% Himalayan Organic', 'Lab Verified Pure'];
       galleryBadges.innerHTML = badges.map(b => `
         <span class="pill-badge ${b.toLowerCase().includes('save') ? 'hot-red' : 'herbal'}">
-          <span class="material-symbols-outlined" style="font-size: 12px;">eco</span>
+          <img src="images/hemp-leaf-clean.png" alt="Hemp" class="hemp-icon" style="width: 13px; height: 13px;">
           <span>${b}</span>
         </span>
       `).join('');
@@ -497,7 +497,9 @@ class HempStoreApp {
       benefitsGrid.innerHTML = benefits.map(b => `
         <div class="product-card" style="padding: 16px;">
           <div class="guarantee-icon-wrap" style="background: var(--color-secondary-fixed); color: var(--color-on-secondary-fixed); margin-bottom: 10px;">
-            <span class="material-symbols-outlined">${b.icon}</span>
+            ${(b.icon === 'hemp' || b.icon === 'eco')
+              ? `<img src="images/hemp-leaf-clean.png" alt="Hemp" class="hemp-icon" style="width: 24px; height: 24px;">`
+              : `<span class="material-symbols-outlined">${b.icon}</span>`}
           </div>
           <h3 class="font-label-md" style="color: var(--color-primary); font-size: 14px; margin-bottom: 4px;">${b.title}</h3>
           <p class="font-body-sm" style="color: var(--color-text-muted);">${b.desc}</p>
@@ -517,7 +519,7 @@ class HempStoreApp {
           { icon: "fitness_center", title: "Clean Plant Nutrition", desc: "Abundant in natural plant protein and balanced omegas with exceptional cellular bioavailability." },
           { icon: "favorite", title: "Heart & Vitality Support", desc: "Golden 3:1 ratio of Omega-6 to Omega-3 essential fatty acids supporting daily cardiovascular vitality." },
           { icon: "bolt", title: "Sustained Natural Energy", desc: "Packed with essential minerals to replenish active bodies without crashes or fatigue." },
-          { icon: "eco", title: "100% Himalayan Raw Harvest", desc: "Sustainably grown in Himalayan foothills by traditional local farmer collectives." }
+          { icon: "hemp", title: "100% Himalayan Raw Harvest", desc: "Sustainably grown in Himalayan foothills by traditional local farmer collectives." }
         ];
       } else if (prod.category === 'personal-care') {
         benefits = [

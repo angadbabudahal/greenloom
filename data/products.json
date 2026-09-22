@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-hemp-soap-6511",
+    "slug": "greenloom-hemp-soap",
+    "name": "GREENLOOM Hemp Soap",
+    "shortName": "Hemp Soap",
+    "category": "personal-care",
+    "categoryLabel": "Personal Care",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 200,
+    "mrp": 300,
+    "discountPercent": 33,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "100% ORGANIC"
+    ],
+    "image": "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-soap-144617.jpg",
+    "gallery": [
+      "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-hemp-soap-144617.jpg"
+    ],
+    "description": "ORGANIC HEMP SOAP",
+    "isBestSeller": false,
+    "isHotSelling": true,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 200,
+        "mrp": 300
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-hemp-shorts-0702",
     "slug": "greenloom-hemp-shorts",
     "name": "GREENLOOM Hemp Shorts",

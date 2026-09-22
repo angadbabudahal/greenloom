@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-full-shirt-0810",
+    "slug": "greenloom-full-shirt",
+    "name": "GREENLOOM Full Shirt",
+    "shortName": "Hemp Shirt",
+    "category": "fashion",
+    "categoryLabel": "Sustainable Gear",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 899,
+    "mrp": 1099,
+    "discountPercent": 18,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "55% Hemp 45% Cotton"
+    ],
+    "image": "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-full-shirt-139188.jpg",
+    "gallery": [
+      "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-full-shirt-139188.jpg"
+    ],
+    "description": "Shirt to match your drip with the hemp's feel",
+    "isBestSeller": false,
+    "isHotSelling": false,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 899,
+        "mrp": 1099
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-hemp-mask-1493",
     "slug": "greenloom-hemp-mask",
     "name": "GREENLOOM Hemp Mask",

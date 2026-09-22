@@ -636,13 +636,7 @@ button {
 }
 
 .hero-about-heading::after {
-  content: '';
-  display: block;
-  width: 54px;
-  height: 2px;
-  background: var(--color-gold-gradient);
-  margin-top: 8px;
-  border-radius: var(--radius-full);
+  display: none;
 }
 
 .hero-about-story {

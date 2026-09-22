@@ -1,5 +1,45 @@
 [
   {
+    "id": "greenloom-greenloom-daura-suruwal-8524",
+    "slug": "greenloom-daura-suruwal",
+    "name": "GREENLOOM Daura Suruwal",
+    "shortName": "Hemp Traditional",
+    "category": "personal-care",
+    "categoryLabel": "Personal Care",
+    "brand": "GREENLOOM",
+    "brandLogo": "images/greenloom-emblem.png",
+    "price": 4500,
+    "mrp": 4699,
+    "discountPercent": 4,
+    "rating": 5,
+    "reviewCount": 1,
+    "badges": [
+      "80% HEMP"
+    ],
+    "image": "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-daura-suruwal-756690.jpg",
+    "gallery": [
+      "https://raw.githubusercontent.com/angadbabudahal/greenloom/main/public/uploads/products/greenloom-daura-suruwal-756690.jpg"
+    ],
+    "description": "Daura Suruwal Made up of Hemp",
+    "isBestSeller": true,
+    "isHotSelling": false,
+    "sizeVariants": [
+      {
+        "volume": "Standard",
+        "duration": "1 Unit",
+        "price": 4500,
+        "mrp": 4699
+      }
+    ],
+    "benefits": [
+      {
+        "icon": "eco",
+        "title": "100% Himalayan Hemp",
+        "desc": "Handcrafted sustainably from Himalayan organic fiber."
+      }
+    ]
+  },
+  {
     "id": "greenloom-greenloom-bamboo-scarf-8702",
     "slug": "greenloom-bamboo-scarf",
     "name": "GREENLOOM Bamboo Scarf",

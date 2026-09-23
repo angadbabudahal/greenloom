@@ -12,8 +12,8 @@ function getAdminConfig() {
   let adminPassword = (process.env.ADMIN_INTERCOM_PASSWORD || process.env.ADMIN_PASSWORD || '').trim();
   let adminId = (process.env.ADMIN_ID || process.env.ADMIN_USERNAME || 'Greenloom').trim();
 
-  // Local development fallback: read from local .env if not yet injected into process.env
-  if (!adminPassword) {
+  // In local development, read current .env file on disk so changes take effect immediately
+  if (!process.env.VERCEL) {
     try {
       const envPath = path.join(process.cwd(), '.env');
       if (fs.existsSync(envPath)) {

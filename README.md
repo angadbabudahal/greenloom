@@ -44,6 +44,8 @@ To enable server-side commits from Vercel to your GitHub repository, configure t
 
 | Variable Name | Required | Description | Example Value |
 |---------------|----------|-------------|---------------|
+| `ADMIN_INTERCOM_PASSWORD` | **Yes** | Secure password for administrative / intercom portal access. Verified on server only. | `your_secure_password_here` |
+| `ADMIN_ID` | Optional | Admin portal login identifier (defaults to `Greenloom`). | `Greenloom` |
 | `GITHUB_TOKEN` | **Yes** | GitHub Personal Access Token (PAT) with repository write permissions. | `ghp_xxxxxxxxxxxxxxxxxxxx` |
 | `GITHUB_OWNER` | **Yes** | Your GitHub username or organization name. | `angadbabudahal` |
 | `GITHUB_REPO` | **Yes** | Your GitHub repository name. | `greenloom` |
@@ -51,7 +53,7 @@ To enable server-side commits from Vercel to your GitHub repository, configure t
 
 > [!CAUTION]
 > **SECURITY NOTICE**:
-> Never prefix `GITHUB_TOKEN` with `VITE_` or `NEXT_PUBLIC_`. Keep it as `GITHUB_TOKEN` so that Vercel only exposes it to serverless API routes (`/api/*`), ensuring it is completely invisible to visitors and client-side browsers.
+> Never prefix secrets like `ADMIN_INTERCOM_PASSWORD` or `GITHUB_TOKEN` with `VITE_` or `NEXT_PUBLIC_`. Keep them as standard server environment variables so that Vercel only exposes them to serverless API routes (`/api/*`), ensuring they are completely invisible to visitors and client-side browsers.
 
 ---
 
@@ -113,7 +115,8 @@ npm run build
 - **Cause**: A product with an identical slug/ID already exists.
 - **Fix**: Change the product title or use the **Edit** button in the Admin Inventory list to modify the existing product.
 
-### 4. Admin Portal Login & Credentials
-- **Portal ID**: `Greenloom`
-- **Password**: `Greenloom0855`
-- **Security lockout**: 3 consecutive incorrect attempts locks access for 8 hours.
+### 4. Admin Portal Login & Security
+- **Portal ID**: Configured via `ADMIN_ID` (defaults to `Greenloom`).
+- **Portal Password**: Configured via the `ADMIN_INTERCOM_PASSWORD` environment variable in your Vercel Project Settings (or local `.env`).
+- **Server-Side Authentication**: Passwords are verified exclusively on the server (`/api/auth`) and are never bundled, transmitted to, or exposed in client-side code, repositories, or API responses.
+- **Security Lockout**: 3 consecutive incorrect attempts locks access for 8 hours.

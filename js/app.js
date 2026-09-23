@@ -843,8 +843,7 @@ class HempStoreApp {
 
   // --- Admin Auth Helpers ---
   static get AUTH_KEY() { return 'greenloom_admin_auth'; }
-  static get CORRECT_ID() { return 'Greenloom'; }
-  static get CORRECT_PW() { return 'Greenloom0855'; }
+  static get DEFAULT_ID() { return 'Greenloom'; }
   static get MAX_ATTEMPTS() { return 3; }
   static get LOCKOUT_MS() { return 8 * 60 * 60 * 1000; } // 8 hours
 
@@ -865,9 +864,8 @@ class HempStoreApp {
   }
 
   isAuthenticated() {
-    const s = this.getAuthState();
     // session token valid for current browser session (sessionStorage)
-    return sessionStorage.getItem('greenloom_admin_session') === '1' && !this.isAuthLocked();
+    return Boolean(sessionStorage.getItem('greenloom_admin_session')) && !this.isAuthLocked();
   }
 
   // --- Administrative Product Upload & Management Portal ---
@@ -1160,56 +1158,89 @@ class HempStoreApp {
     // --- Login Gate Events ---
     const loginForm = document.getElementById('admin-login-form');
     if (loginForm) {
-      loginForm.addEventListener('submit', (e) => {
+      loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const idVal = (document.getElementById('admin-login-id')?.value || '').trim();
         const pwVal = (document.getElementById('admin-login-pw')?.value || '').trim();
         const errEl = document.getElementById('admin-login-error');
         const attemptsInfo = document.getElementById('admin-login-attempts-info');
+        const submitBtn = document.getElementById('admin-login-submit');
+        const pwInput = document.getElementById('admin-login-pw');
+        const idInput = document.getElementById('admin-login-id');
 
         if (this.isAuthLocked()) {
           this._showAdminLockoutScreen();
           return;
         }
 
-        if (idVal === HempStoreApp.CORRECT_ID && pwVal === HempStoreApp.CORRECT_PW) {
-          // Success — grant session, reset attempts
-          sessionStorage.setItem('greenloom_admin_session', '1');
-          this.saveAuthState({ attempts: 0, lockedUntil: 0, authenticated: true });
-          if (errEl) errEl.style.display = 'none';
-          // Clear inputs
-          const idInput = document.getElementById('admin-login-id');
-          const pwInput = document.getElementById('admin-login-pw');
-          if (idInput) idInput.value = '';
-          if (pwInput) pwInput.value = '';
-          this._showAdminInventoryScreen();
-        } else {
-          // Failure
-          const s = this.getAuthState();
-          const newAttempts = (s.attempts || 0) + 1;
-          let newState;
-          if (newAttempts >= HempStoreApp.MAX_ATTEMPTS) {
-            newState = { attempts: newAttempts, lockedUntil: Date.now() + HempStoreApp.LOCKOUT_MS, authenticated: false };
-            this.saveAuthState(newState);
-            this._showAdminLockoutScreen();
+        if (!idVal || !pwVal) {
+          if (errEl) {
+            errEl.textContent = 'Please enter both Admin ID and password.';
+            errEl.style.display = 'block';
+          }
+          return;
+        }
+
+        const origBtnText = submitBtn ? submitBtn.textContent : 'Access Portal';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Verifying...';
+        }
+
+        try {
+          const res = await this.fetchWithTimeout('/api/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: idVal, password: pwVal })
+          }, 10000);
+
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok && data.success) {
+            // Success — save secure session token, reset failed attempts
+            sessionStorage.setItem('greenloom_admin_session', data.token || '1');
+            this.saveAuthState({ attempts: 0, lockedUntil: 0, authenticated: true });
+            if (errEl) errEl.style.display = 'none';
+            if (idInput) idInput.value = '';
+            if (pwInput) pwInput.value = '';
+            this._showAdminInventoryScreen();
           } else {
-            newState = { attempts: newAttempts, lockedUntil: 0, authenticated: false };
-            this.saveAuthState(newState);
-            const remaining = HempStoreApp.MAX_ATTEMPTS - newAttempts;
-            if (errEl) {
-              errEl.textContent = `Incorrect credentials. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`;
-              errEl.style.display = 'block';
+            // Failure — track attempts and lockout
+            const s = this.getAuthState();
+            const newAttempts = (s.attempts || 0) + 1;
+            let newState;
+            if (newAttempts >= HempStoreApp.MAX_ATTEMPTS) {
+              newState = { attempts: newAttempts, lockedUntil: Date.now() + HempStoreApp.LOCKOUT_MS, authenticated: false };
+              this.saveAuthState(newState);
+              this._showAdminLockoutScreen();
+            } else {
+              newState = { attempts: newAttempts, lockedUntil: 0, authenticated: false };
+              this.saveAuthState(newState);
+              const remaining = HempStoreApp.MAX_ATTEMPTS - newAttempts;
+              if (errEl) {
+                errEl.textContent = data.error || `Incorrect credentials. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.`;
+                errEl.style.display = 'block';
+              }
+              if (attemptsInfo) attemptsInfo.textContent = `${remaining} attempt${remaining === 1 ? '' : 's'} remaining`;
+              // Shake card
+              const card = document.querySelector('.admin-login-card');
+              if (card) {
+                card.classList.add('admin-login-shake');
+                setTimeout(() => card.classList.remove('admin-login-shake'), 600);
+              }
+              if (pwInput) { pwInput.value = ''; pwInput.focus(); }
             }
-            if (attemptsInfo) attemptsInfo.textContent = `${remaining} attempt${remaining === 1 ? '' : 's'} remaining`;
-            // Shake the card
-            const card = document.querySelector('.admin-login-card');
-            if (card) {
-              card.classList.add('admin-login-shake');
-              setTimeout(() => card.classList.remove('admin-login-shake'), 600);
-            }
-            // Clear password
-            const pwInput = document.getElementById('admin-login-pw');
-            if (pwInput) { pwInput.value = ''; pwInput.focus(); }
+          }
+        } catch (err) {
+          console.error('[GREENLOOM CMS] Authentication request error:', err);
+          if (errEl) {
+            errEl.textContent = `Server authentication error: ${err.message || 'Unable to connect to server.'}`;
+            errEl.style.display = 'block';
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = origBtnText;
           }
         }
       });

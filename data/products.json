@@ -37,7 +37,17 @@
         "title": "100% Himalayan Hemp",
         "desc": "Handcrafted sustainably from Himalayan organic fiber."
       }
-    ]
+    ],
+    "sizes": [
+      "M",
+      "XL",
+      "XXL"
+    ],
+    "sizeText": "M, XL, XXL",
+    "colors": [
+      "Standard"
+    ],
+    "colorText": "Standard"
   },
   {
     "id": "greenloom-greenloom-hemp-purse-1306",
@@ -247,7 +257,17 @@
         "title": "100% Himalayan Hemp",
         "desc": "Handcrafted sustainably from Himalayan organic fiber."
       }
-    ]
+    ],
+    "sizes": [
+      "M",
+      "XL",
+      "XXL"
+    ],
+    "sizeText": "M, XL, XXL",
+    "colors": [
+      "Standard"
+    ],
+    "colorText": "Standard"
   },
   {
     "id": "greenloom-greenloom-bamboo-scarf-8702",
